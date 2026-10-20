@@ -1,0 +1,28 @@
+name: Deploy to App Engine via WIF
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  id-token: write # Required to fetch the OIDC token from GitHub
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: 'projects/780460971678/locations/global/workloadIdentityPools/github-pool-2010/providers/github-provider-2010'
+          service_account: 'gh-actions-deployer-2010@section31-509508.iam.gserviceaccount.com'
+
+      - name: Deploy to App Engine
+        uses: google-github-actions/deploy-appengine@v2
+        with:
+          deliverables: 'app.yaml'
